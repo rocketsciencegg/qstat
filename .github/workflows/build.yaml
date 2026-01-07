@@ -2,15 +2,15 @@ name: Build CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build_linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: autogen
         run: ./autogen.sh
       - name: autoreconf force
@@ -25,7 +25,7 @@ jobs:
   build_macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: install automake
         run: brew install automake
       - name: autogen
@@ -40,7 +40,7 @@ jobs:
   build_windows:
     runs-on:    windows-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - uses: ilammy/msvc-dev-cmd@v1
       - name: nmake debug build
         run: |

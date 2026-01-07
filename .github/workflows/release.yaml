@@ -1,22 +1,22 @@
 name: Tag Release
 
-on: 
+on:
   push:
     tags:
-    - 'v*'
+      - 'v*'
 
 jobs:
   build_linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: autogen
         run: ./autogen.sh
       - name: configure
         run: ./configure
       - name: make
-        run: QSTAT_VERSION=${{ github.event.release.tag_name }} make
-      - uses: actions/upload-artifact@v2
+        run: QSTAT_VERSION=${{ github.ref_name }} make
+      - uses: actions/upload-artifact@v6
         with:
           name: linux_amd64
           path: qstat
@@ -24,7 +24,7 @@ jobs:
   build_macos:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - name: install automake
         run: brew install automake
       - name: autogen
@@ -32,8 +32,8 @@ jobs:
       - name: configure
         run: ./configure
       - name: make
-        run: QSTAT_VERSION=${{ github.event.release.tag_name }} make
-      - uses: actions/upload-artifact@v2
+        run: QSTAT_VERSION=${{ github.ref_name }} make
+      - uses: actions/upload-artifact@v6
         with:
           name: darwin_amd64
           path: qstat
@@ -42,14 +42,14 @@ jobs:
   build_windows:
     runs-on: 	windows-latest
     env:
-      QSTAT_VERSION: ${{ github.event.release.tag_name }}
+      QSTAT_VERSION: ${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v6
       - uses: ilammy/msvc-dev-cmd@v1
       - name: nmake
         run: |
           nmake -f Makefile.noauto windows windows_debug
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v6
         with:
           name: windows_amd64
           path: qstat.exe
@@ -62,18 +62,18 @@ jobs:
       -  build_linux
       -  build_macos
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v7
         with:
           path: bin
       - name: zip
         run: zip -r release.zip bin/* qstat.cfg contrib.cfg LICENSE.*
       - name: Release
-        uses: "softprops/action-gh-release@v1"
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           prerelease: false
-          tag_name:  "${{ github.event.release.tag_name }}"
+          tag_name:  "${{ github.ref_name }}"
           files: |
             release.zip
