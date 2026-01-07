@@ -30,7 +30,8 @@ combine_packets(struct qserver *server)
 	int maxes[MAX_PACKETS];
 	int lengths[MAX_PACKETS];
 	SavedData *sdata = &server->saved_data;
-	int i, p, ret = INPROGRESS;
+	int i, p;
+	query_status_t ret = INPROGRESS;
 
 	n_ids = 0;
 
@@ -131,7 +132,7 @@ combine_packets(struct qserver *server)
 		}
 		// Call the server's packet processing method flagging as a combine call
 		server->combined = 1;
-		ret = ((int (*)())server->type->packet_func)(server, combined, datalen);
+		ret = server->type->packet_func(server, combined, datalen);
 		free(combined);
 		server->combined = 0;
 
