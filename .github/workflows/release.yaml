@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+
 jobs:
   build_linux:
     runs-on: ubuntu-latest
@@ -45,7 +48,7 @@ jobs:
       QSTAT_VERSION: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v6
-      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
       - name: nmake
         run: |
           nmake -f Makefile.noauto windows windows_debug
@@ -57,6 +60,9 @@ jobs:
   # https://github.com/vmactions/freebsd-vm
   release:
     runs-on: ubuntu-latest
+    permissions:
+      # needed to create the GitHub release
+      contents: write
     needs:
       -  build_windows
       -  build_linux
@@ -69,7 +75,7 @@ jobs:
       - name: zip
         run: zip -r release.zip bin/* qstat.cfg contrib.cfg LICENSE.*
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
